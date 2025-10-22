@@ -2,31 +2,6 @@ import * as THREE from 'https://cdn.skypack.dev/three@0.128.0/build/three.module
 import { OrbitControls } from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/loaders/GLTFLoader.js';
 
-/* import javascriptLogo from './javascript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.js'
-
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
-
-setupCounter(document.querySelector('#counter'))    */
-
-
 // Scene setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -104,6 +79,22 @@ const torusKnot = new THREE.Mesh(torusGeo, torusMaterial);
 scene.add(torusKnot);
 torusKnot.position.y = 20;
 
+// Floating transparent crystal
+const crystalGeometry = new THREE.OctahedronGeometry(6, 0);
+const crystalMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x00ffff,
+    transparent: true,
+    opacity: 2,
+    transmission: 1.0, // makes it look like glass
+    roughness: 0.1,
+    metalness: 0.2,
+    clearcoat: 1.0,
+});
+const crystal = new THREE.Mesh(crystalGeometry, crystalMaterial);
+scene.add(crystal);
+crystal.position.set(0, 15, -30);
+
+
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
@@ -116,6 +107,15 @@ function animate() {
 
     // rotate the smiley sphere
     smileMesh.rotation.y += 0.05;
+
+    // Rotate and pulse the crystal
+    crystal.rotation.y += 0.01;
+    crystal.rotation.x += 0.005;
+
+    // Pulse effect
+    const scale = 1 + 0.2 * Math.sin(Date.now() * 0.002);
+    crystal.scale.set(scale, scale, scale);
+
 
     controls.update();
 
